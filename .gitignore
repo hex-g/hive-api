@@ -4,11 +4,6 @@
 ### Spring Initializr ###
 HELP.md
 
-### Gradle ###
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-
 ### STS ###
 .apt_generated
 .classpath
@@ -46,27 +41,7 @@ out/
 *.rar
 hs_err_pid*
 
-### Javascript, NPM and Node.js ###
-logs
-*.log
-npm-debug.log*
-pids
-*.pid
-*.seed
-*.pid.lock
-lib-cov
-coverage
-.nyc_output
-.lock-wscript
-build/Release
-node_modules/
-jspm_packages/
-typings/
-.npm
-.eslintcache
-.node_repl_history
-*.tgz
-.env
-.next
-
-!gradle/wrapper/gradle-wrapper.jar
+### Gradle ###
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar 
