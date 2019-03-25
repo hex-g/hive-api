@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import hive.repository.model.User;
+import hive.common.entity.User;
 
 @RestController
 @RequestMapping("/user")

@@ -5,7 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Arrays;
 import java.util.List;
 
-import hive.repository.model.User;
+import hive.common.entity.User;
 
 public class UserRepository {
   public static UserRepository instance = new UserRepository();
