@@ -17,7 +17,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     var hiveUser =
-        restTemplate.getForObject("http://repository-service/user/" + username, hive.repository.model.User.class);
+        restTemplate.getForObject("http://repository-service/user/" + username, hive.common.entity.User.class);
 
     if (hiveUser == null) {
       throw new UsernameNotFoundException("Username: " + username + " not found");

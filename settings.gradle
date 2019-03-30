@@ -1,4 +1,4 @@
-rootProject.name = 'hive'
+rootProject.name = 'hive-api'
 
 include 'auth'
 include 'common'
