@@ -35,9 +35,9 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
         .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
         // Role-specific routes
-        .antMatchers("/*/admin/**").hasRole("ADMIN")
-        .antMatchers("/*/pedagogue/**").hasRole("PEDAGOGUE")
-        .antMatchers("/*/student/**").hasRole("STUDENT")
+        .antMatchers("/**/admin/**").hasRole("ADMIN")
+        .antMatchers("/**/pedagogue/**").hasRole("PEDAGOGUE")
+        .antMatchers("/**/student/**").hasRole("STUDENT")
         // API routes
         .antMatchers("/kirby/**").authenticated()
         // Block everything else 'cause I'm paranoid

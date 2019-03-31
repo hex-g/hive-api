@@ -1,7 +1,7 @@
 # Authentication Service
 ## Allowed HTTPs requests:
 __POST:__ Request Bearer token
-## Description Of Usual Server Responses:
+## Description Of Usual Responses:
 * 200 `OK` - the authentication was successful.
 * 401 `Unauthorized` - the given username does not exist; or the given password is incorrect.
 ## Request template:
