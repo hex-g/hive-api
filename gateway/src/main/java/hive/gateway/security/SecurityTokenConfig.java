@@ -34,9 +34,14 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
         .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
         .authorizeRequests()
         .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
-        // change this later
-        .antMatchers("/gallery" + "/admin/**").hasRole("ADMIN")
-        .anyRequest().authenticated();
+        // Role-specific routes
+        .antMatchers("/**/admin/**").hasRole("ADMIN")
+        .antMatchers("/**/pedagogue/**").hasRole("PEDAGOGUE")
+        .antMatchers("/**/student/**").hasRole("STUDENT")
+        // API routes
+        .antMatchers("/kirby/**").authenticated()
+        // Block everything else 'cause I'm paranoid
+        .antMatchers("/**").denyAll();
   }
 
   @Bean
