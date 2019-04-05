@@ -4,4 +4,5 @@ include 'auth'
 include 'common'
 include 'gateway'
 include 'naming-server'
-include 'repository'
+include 'entity'
+
