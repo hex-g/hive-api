@@ -6,4 +6,3 @@ include 'gateway'
 include 'naming-server'
 include 'entity'
 include 'kirby'
-
