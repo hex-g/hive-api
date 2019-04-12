@@ -7,11 +7,10 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication
 @EnableEurekaClient
-@EntityScan( basePackages = {"hive.entity"} )
-public class AlbumApplication {
+@EntityScan( basePackages = {"hive.entity.user"} )
+public class SmugshotApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(AlbumApplication.class, args);
+    SpringApplication.run(SmugshotApplication.class, args);
   }
-
 }

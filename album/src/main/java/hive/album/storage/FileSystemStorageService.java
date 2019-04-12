@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -18,12 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileSystemStorageService implements iStorageService{
-
-  private final Path rootLocation;
-
+  @Value("${hive.mugshot.image-directory-path}")
+  private String imageDirectoryPathAsString;
+  private Path imageDirectoryPath;
   //@Autowired
   public FileSystemStorageService() {
-    this.rootLocation = Paths.get("C:\\Users\\Germano\\Desktop\\AlbumTest");
+    this.imageDirectoryPath = Paths.get(imageDirectoryPathAsString);
   }
 
   @Override
@@ -42,7 +42,7 @@ public class FileSystemStorageService implements iStorageService{
         throw new RuntimeException();
       }
       try (InputStream inputStream = file.getInputStream()) {
-        Files.copy(inputStream, this.rootLocation.resolve(filename),
+        Files.copy(inputStream, this.imageDirectoryPath.resolve(filename),
             StandardCopyOption.REPLACE_EXISTING);
       }
     }
@@ -55,9 +55,9 @@ public class FileSystemStorageService implements iStorageService{
   @Override
   public Stream<Path> loadAll() {
     try {
-      return Files.walk(this.rootLocation, 1)
-          .filter(path -> !path.equals(this.rootLocation))
-          .map(this.rootLocation::relativize);
+      return Files.walk(this.imageDirectoryPath, 1)
+          .filter(path -> !path.equals(this.imageDirectoryPath))
+          .map(this.imageDirectoryPath::relativize);
     }
     catch (IOException e) {
       //throw new StorageException("Failed to read stored files", e);
@@ -68,7 +68,7 @@ public class FileSystemStorageService implements iStorageService{
 
   @Override
   public Path load(String filename) {
-    return rootLocation.resolve(filename);
+    return imageDirectoryPath.resolve(filename);
   }
 
   @Override
@@ -91,13 +91,13 @@ public class FileSystemStorageService implements iStorageService{
 
   @Override
   public void deleteAll() {
-    FileSystemUtils.deleteRecursively(rootLocation.toFile());
+    FileSystemUtils.deleteRecursively(imageDirectoryPath.toFile());
   }
 
   @Override
   public void init() {
     try {
-      Files.createDirectories(rootLocation);
+      Files.createDirectories(imageDirectoryPath);
     }
     catch (IOException e) {
       throw new RuntimeException("Could not initialize storage", e);

@@ -1,7 +1,7 @@
 package hive.album.controller;
 
-import hive.album.entity.Something;
 import hive.album.storage.iStorageService;
+import hive.common.security.HiveHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +22,6 @@ public class AlbumController {
   public String a(){
     return "a";
   }
-  @GetMapping("/sum")
-  public Something sumNumbers(@RequestParam(value = "n1", required = false) String n1,
-                              @RequestParam(value = "n2", required = false) String n2) {
-    var algo  =new Something();
-    int num1=Integer.parseInt(n1);
-    num1+= Integer.parseInt(n2);
-    algo.setContent("soma "+(num1));
-    return algo;
-  }
   private final iStorageService storageService;
 
   @Autowired
@@ -47,19 +38,21 @@ public class AlbumController {
     return "uploadForm";
   }
 */
-  @GetMapping("/files/{filename:.+}")
+  @GetMapping("/smugshot/{filename:.+}")
   @ResponseBody
-  public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-
+  public ResponseEntity<Resource> serveFile
+  (@PathVariable String filename,
+   @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username)
+  {
     Resource file = storageService.loadAsResource(filename);
-    return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+    return ResponseEntity.ok().header(
+            HttpHeaders.CONTENT_DISPOSITION,
         "attachment; filename=\"" + file.getFilename() + "\"").body(file);
   }
 
-  @PostMapping("/")
+  @PostMapping("/smugshot/")
   public String handleFileUpload(@RequestParam("file") MultipartFile file) {
     storageService.store(file);
     return "{Mensagem:Sucesso}";
   }
-
 }
