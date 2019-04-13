@@ -2,7 +2,6 @@ package hive.kirby.controller;
 
 import hive.common.security.HiveHeaders;
 import hive.kirby.entity.Note;
-import hive.kirby.exception.IAmADirectoryException;
 import hive.kirby.exception.InvalidPathException;
 import hive.kirby.exception.NoteNotFoundException;
 import hive.kirby.repository.UserRepository;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
@@ -20,7 +20,6 @@ import java.nio.file.Paths;
 public class NoteController {
   @Value("${hive.kirby.storage-directory}")
   private String rootDir;
-  private String fileExtension = ".kirby";
 
   private final UserRepository userRepository;
 
@@ -40,10 +39,6 @@ public class NoteController {
 
     var user = userRepository.findByUsername(username);
     var pathObj = Paths.get(rootDir, user.getId().toString(), path);
-
-    if (Files.isDirectory(pathObj)) {
-      throw new IAmADirectoryException();
-    }
 
     try {
       return new Note(path, new String(Files.readAllBytes(pathObj)));
@@ -69,16 +64,33 @@ public class NoteController {
     var pathObj = Paths.get(rootDir, user.getId().toString(), path);
 
     try {
-      if (Files.exists(pathObj)) {
-        if (Files.isDirectory(pathObj)) {
-          throw new IAmADirectoryException();
-        }
+      Files.createDirectories(pathObj.getParent());
+      Files.write(pathObj, note.getContent().getBytes());
+    } catch (IOException e) {
+      throw new RuntimeException();
+    }
+  }
 
-        Files.write(pathObj, note.getContent().getBytes());
-      } else {
-        Files.createDirectories(pathObj.getParent());
-        Files.write(pathObj, note.getContent().getBytes());
+  @DeleteMapping()
+  public void deleteNote(
+      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username,
+      @RequestParam final String path
+  ) {
+    if (path.contains("..")) {
+      throw new InvalidPathException();
+    }
+
+    var user = userRepository.findByUsername(username);
+    var pathObj = Paths.get(rootDir, user.getId().toString(), path);
+
+    try {
+      Files.delete(pathObj);
+      var current = pathObj.getParent();
+      while (current != null) {
+        Files.delete(current);
+        current = current.getParent();
       }
+    } catch (DirectoryNotEmptyException | NoSuchFileException ignored) {
     } catch (IOException e) {
       throw new RuntimeException();
     }

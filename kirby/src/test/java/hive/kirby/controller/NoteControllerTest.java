@@ -31,8 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -74,28 +73,6 @@ public class NoteControllerTest {
         )
         .andExpect(status().isBadRequest())
         .andExpect(status().reason("Invalid path"));
-  }
-
-  @Test
-  public void givenPathIsValidAndIsDirectory_whenNoteIsRetrieved_then418IsReceived() throws Exception {
-    var id = userId;
-    var fullPath = rootDir + "/" + id + "/a/valid/path/to/a/dir";
-    var path = "a/valid/path/to/a/dir";
-
-    try {
-      Files.createDirectories(Paths.get(fullPath));
-
-      mockMvc
-          .perform(
-              get("/note")
-                  .header(HiveHeaders.AUTHENTICATED_USER_NAME_HEADER, username)
-                  .param("path", path)
-          )
-          .andExpect(status().isIAmATeapot())
-          .andExpect(status().reason("I'm a directory!"));
-    } finally {
-      deleteCreatedFiles();
-    }
   }
 
   @Test
@@ -200,31 +177,6 @@ public class NoteControllerTest {
   }
 
   @Test
-  public void givenPathIsValidAndIsDirectory_whenNoteIsSaved_then418IsReceived() throws Exception {
-    var id = userId;
-    var fullPath = rootDir + "/" + id + "/a/valid/path/to/a/dir";
-    var path = "a/valid/path/to/a/dir";
-
-    try {
-      Files.createDirectories(Paths.get(fullPath));
-
-      mockMvc
-          .perform(
-              post("/note")
-                  .header(HiveHeaders.AUTHENTICATED_USER_NAME_HEADER, username)
-                  .contentType("application/json")
-                  .content(new ObjectMapper().writeValueAsString(
-                      new Note(path, RandomStringUtils.randomAscii(2048))
-                  ))
-          )
-          .andExpect(status().isIAmATeapot())
-          .andExpect(status().reason("I'm a directory!"));
-    } finally {
-      deleteCreatedFiles();
-    }
-  }
-
-  @Test
   public void givenPathIsValidAndFileDoesNotExist_whenNoteIsSaved_thenFileIsCreatedWithNoteContent() throws Exception {
     var dirs = rootDir + "/" + userId + "/a/valid/path/to/a";
     var fullPath = dirs + "/file";
@@ -275,6 +227,29 @@ public class NoteControllerTest {
     } finally {
       deleteCreatedFiles();
     }
+  }
+
+  @Test
+  public void givenPathContainsParentDirectoryReference_whenNoteIsDelete_then400IsReceived() throws Exception {
+    mockMvc
+        .perform(
+            delete("/note")
+                .header(HiveHeaders.AUTHENTICATED_USER_NAME_HEADER, username)
+                .param("path", "..")
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(status().reason("Invalid path"));
+  }
+
+  @Test
+  public void givenPathIsValidAndNoteExists_whenNoteIsDeleted_then200IsReceived() throws Exception {
+    mockMvc
+        .perform(
+            delete("/note")
+                .header(HiveHeaders.AUTHENTICATED_USER_NAME_HEADER, username)
+                .param("path", "a/valid/path/to/a/file")
+        )
+        .andExpect(status().isOk());
   }
 
   private void deleteCreatedFiles() {
