@@ -12,5 +12,4 @@ public class MugshotApplication {
   public static void main(String[] args) {
     SpringApplication.run(MugshotApplication.class, args);
   }
-
 }
