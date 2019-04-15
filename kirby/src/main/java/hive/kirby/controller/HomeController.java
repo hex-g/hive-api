@@ -5,14 +5,20 @@ import hive.kirby.entity.PathNode;
 import hive.kirby.repository.UserRepository;
 import hive.kirby.util.DirectoryTreeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Paths;
+
 @RestController
 @RequestMapping("/")
 public class HomeController {
+  @Value("${hive.kirby.storage-directory}")
+  private String rootDir;
+
   private final UserRepository userRepository;
 
   @Autowired
@@ -24,8 +30,8 @@ public class HomeController {
   public PathNode userDirectoryTree(
       @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username
   ) {
-    var user = userRepository.findByUsername(username);
+    final var user = userRepository.findByUsername(username);
 
-    return new DirectoryTreeBuilder(user.getId()).getRoot();
+    return new DirectoryTreeBuilder(Paths.get(rootDir, user.getId().toString()).toString()).getRoot();
   }
 }

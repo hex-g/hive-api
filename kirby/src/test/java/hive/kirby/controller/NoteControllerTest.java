@@ -256,6 +256,7 @@ public class NoteControllerTest {
     try {
       var p = Paths.get(rootDir, userId.toString());
       if (Files.exists(p)) {
+        //noinspection ResultOfMethodCallIgnored
         Files.walk(p)
             .sorted(Comparator.reverseOrder())
             .map(Path::toFile)
