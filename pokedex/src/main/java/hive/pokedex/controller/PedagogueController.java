@@ -7,6 +7,8 @@ import hive.pokedex.repository.PedagogueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityTransaction;
+
 @RestController
 @RequestMapping("/pedagogue")
 public class PedagogueController {
@@ -14,28 +16,28 @@ public class PedagogueController {
   @Autowired
   private PedagogueRepository pedagogues;
 
-  @GetMapping("/get/{rm}")
-  public Pedagogue buscar(@PathVariable final String rm) {
-    return pedagogues.findByRm(rm);
+  @GetMapping
+  public Iterable<Pedagogue> findAll() {
+    return pedagogues.findAll();
   }
 
-  @GetMapping("/insert:{name},{linkGit},{rm},{username},{password},{role},{status}")
-  public void save(
-      @PathVariable final String name,
-      @PathVariable final String linkGit,
-      @PathVariable final String rm,
-      @PathVariable final String username,
-      @PathVariable final String password,
-      @PathVariable final int role,
-      @PathVariable final int status
+  @PostMapping
+  public Pedagogue save(
+      @RequestParam String name,
+      @RequestParam String rm,
+      @RequestParam String username,
+      @RequestParam String password,
+      @RequestParam String role
   ) {
-
     Pedagogue pedagogue = new Pedagogue(rm);
-    Person person = new Person(name, linkGit);
-    person.setUser(new User(username,password,role,status));
+
+    Person person = new Person(name);
+    person.setUser(new User(username,password,role));
 
     pedagogue.setPerson(person);
 
     pedagogues.save(pedagogue);
+    return pedagogue;
   }
+
 }

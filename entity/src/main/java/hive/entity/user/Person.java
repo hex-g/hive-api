@@ -13,9 +13,6 @@ public class Person {
   @Column(name = "name")
   private String name;
 
-  @Column(name = "link_git")
-  private String linkGit;
-
   @ManyToOne(cascade = CascadeType.ALL, optional = false)
   @JoinColumn(name="user_id", unique=true)
   private User user;
@@ -23,9 +20,8 @@ public class Person {
   public Person() {
   }
 
-  public Person(String name, String linkGit) {
+  public Person(String name) {
     this.name = name;
-    this.linkGit = linkGit;
   }
 
   public User getUser() {
@@ -48,11 +44,4 @@ public class Person {
     this.name = name;
   }
 
-  public String getLinkGit() {
-    return linkGit;
-  }
-
-  public void setLinkGit(String linkGit) {
-    this.linkGit = linkGit;
-  }
 }
