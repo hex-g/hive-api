@@ -12,9 +12,9 @@ public class UserController {
     @Autowired
     private UserRepository users;
 
-    @GetMapping("/get/{username}")
-    public User buscar(@PathVariable final String username) {
-        return users.findByUsername(username);
+    @GetMapping
+    public Iterable<User> buscar() {
+        return users.findAll();
     }
 
 }

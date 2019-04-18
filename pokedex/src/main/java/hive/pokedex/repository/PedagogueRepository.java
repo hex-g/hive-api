@@ -6,5 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface PedagogueRepository extends CrudRepository<Pedagogue, Integer> {
+
   Pedagogue findByRm(String rm);
+
 }

@@ -21,6 +21,11 @@ public class PedagogueController {
     return pedagogues.findAll();
   }
 
+  @GetMapping("/get{rm}")
+  public Pedagogue findByName(@PathVariable String rm){
+    return pedagogues.findByRm(rm);
+  }
+
   @PostMapping
   public Pedagogue save(
       @RequestParam String name,

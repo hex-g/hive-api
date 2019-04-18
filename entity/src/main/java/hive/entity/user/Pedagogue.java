@@ -14,7 +14,7 @@ public class Pedagogue {
   private String rm;
 
   @ManyToOne(cascade = CascadeType.ALL, optional = false)
-  @JoinColumn(name="person1_id", unique=true)
+  @JoinColumn(name="person_id", unique=true)
   private Person person;
 
   public Pedagogue() {
