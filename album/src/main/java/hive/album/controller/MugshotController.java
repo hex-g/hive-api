@@ -33,7 +33,7 @@ public class MugshotController {
     userRepository.save(new User("JAVA","123",0,0));
   }
 
-  @ResponseStatus(code = HttpStatus.I_AM_A_TEAPOT, reason = "The server is working and have an user")
+  @ResponseStatus(code = HttpStatus.OK, reason = "The server is working and have an user")
   @GetMapping("/hey") public void hey(){}
 
   @GetMapping("/dir") public String getRootDirectory() {
@@ -52,18 +52,12 @@ public class MugshotController {
   @PostMapping
   public String sendImageProfile(@RequestParam("image") MultipartFile insertedImage, @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
     var user = userRepository.findByUsername(username);
-    if(user==null){
-      throw new UserNotFoundException();
-    }
     return imageStorer.StoreImageProfile(username,insertedImage);
   }
 
   @GetMapping(value = "/{profileImageName:.+}", produces = MediaType.IMAGE_JPEG_VALUE)
   public ResponseEntity<Resource> searchProfileImage(@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username, @PathVariable String profileImageName) {
     var user = userRepository.findByUsername(username);
-    if(user==null){
-      throw new UserNotFoundException();
-    }
     Resource file = imageStorer.loadImage(username,profileImageName);
     return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
   }
@@ -71,9 +65,6 @@ public class MugshotController {
   @DeleteMapping
   public void deleteProfileImage(@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
     var user = userRepository.findByUsername(username);
-    if(user==null){
-      throw new UserNotFoundException();
-    }
     imageStorer.deleteAllUserImages(username);
   }
 }
