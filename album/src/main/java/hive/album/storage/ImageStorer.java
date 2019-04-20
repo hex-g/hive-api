@@ -69,4 +69,7 @@ public class ImageStorer {
       throw new RuntimeException("Not capable to delete the directory.\n"+e);
     }
   }
+  public void ResizeImage(){
+
+  }
 }
