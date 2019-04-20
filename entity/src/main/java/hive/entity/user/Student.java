@@ -14,7 +14,7 @@ public class Student {
   private String ra;
 
   @ManyToOne(cascade = CascadeType.ALL, optional = false)
-  @JoinColumn(name="person2_id", unique=true)
+  @JoinColumn(name = "person_id", unique = true)
   private Person person;
 
   public Student() {
@@ -22,6 +22,14 @@ public class Student {
 
   public Student(String ra) {
     this.ra = ra;
+  }
+
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public Person getPerson() {

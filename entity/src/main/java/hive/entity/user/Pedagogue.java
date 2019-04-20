@@ -14,10 +14,18 @@ public class Pedagogue {
   private String rm;
 
   @ManyToOne(cascade = CascadeType.ALL, optional = false)
-  @JoinColumn(name="person_id", unique=true)
+  @JoinColumn(name = "person_id", unique = true)
   private Person person;
 
   public Pedagogue() {
+  }
+
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public Pedagogue(String rm) {
