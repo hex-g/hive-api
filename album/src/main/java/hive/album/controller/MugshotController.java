@@ -16,55 +16,36 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
 
 @RestController
-@RequestMapping("/smugshot")
+@RequestMapping("/mugshot")
 public class MugshotController {
-
   @Value("${hive.mugshot.image-directory-path}")
   private String rootDir;
-
   private final ImageStorer imageStorer;
   private final UserRepository userRepository;
-
-  @Autowired public MugshotController(UserRepository userRepository,ImageStorer imageStorer) {
-    this.imageStorer=imageStorer;
+  private String imageName="ProfileImage.jpg";
+  @Autowired public MugshotController(ImageStorer imageStorer,UserRepository userRepository) {
     this.userRepository = userRepository;
-    userRepository.save(new User("TESTE","123",0,0));
-    userRepository.save(new User("GERMANO","123",0,0));
-    userRepository.save(new User("JAVA","123",0,0));
+    this.imageStorer = imageStorer;
   }
 
-  @ResponseStatus(code = HttpStatus.OK, reason = "The server is working and have an user")
-  @GetMapping("/hey") public void hey(){}
-
-  @GetMapping("/dir") public String getRootDirectory() {
-    return rootDir;
-  }
-  @GetMapping("/user") public String getUser
-      (@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username)
-  {
-    var user=userRepository.findByUsername(username);
-    return user.getUsername();
-  }
-  //tratar multiplos arquivos excecao
-  //tratar replace de imagens
-  //tratar replace de imagem não proprietaria
-  //tratar renomeacao de imagem
+  @ResponseStatus(code = HttpStatus.OK, reason = "Profile image Stored In Success")
   @PostMapping
-  public String sendImageProfile(@RequestParam("image") MultipartFile insertedImage, @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
-    var user = userRepository.findByUsername(username);
-    return imageStorer.StoreImageProfile(username,insertedImage);
+  public void sendImageProfile(@RequestParam("image") MultipartFile insertedImage, @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+    var userID=userRepository.findByUsername(username).getId().toString();
+    imageStorer.StoreImageProfile(userID,insertedImage,imageName);
   }
 
-  @GetMapping(value = "/{profileImageName:.+}", produces = MediaType.IMAGE_JPEG_VALUE)
-  public ResponseEntity<Resource> searchProfileImage(@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username, @PathVariable String profileImageName) {
-    var user = userRepository.findByUsername(username);
-    Resource file = imageStorer.loadImage(username,profileImageName);
+  @GetMapping(produces = MediaType.IMAGE_JPEG_VALUE)
+  public ResponseEntity<Resource> searchProfileImage(@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+    var userID=userRepository.findByUsername(username).getId().toString();
+    Resource file = imageStorer.loadImage(userID,imageName);
     return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
   }
 
+  @ResponseStatus(code = HttpStatus.NO_CONTENT, reason = "Profile image successfully deleted")
   @DeleteMapping
   public void deleteProfileImage(@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
-    var user = userRepository.findByUsername(username);
-    imageStorer.deleteAllUserImages(username);
+    var userID=userRepository.findByUsername(username).getId().toString();
+    imageStorer.deleteAllUserImages(userID,imageName);
   }
 }
