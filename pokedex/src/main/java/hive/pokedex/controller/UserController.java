@@ -1,7 +1,11 @@
 package hive.pokedex.controller;
 
 import hive.entity.user.User;
+import hive.pokedex.exception.EntityNotFoundException;
+import hive.pokedex.exception.NullValueException;
+import hive.pokedex.exception.UsernameAlreadyExistsException;
 import hive.pokedex.repository.UserRepository;
+import hive.pokedex.util.CopyPropertiesNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +16,14 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-  @Autowired
+  private final String ROLE = "ADMIN";
+
   private UserRepository userRepository;
+
+  @Autowired
+  public UserController(UserRepository userRepository){
+    this.userRepository=userRepository;
+  }
 
   @GetMapping
   public List<User> find(
@@ -26,6 +36,11 @@ public class UserController {
     user.setId(id);
 
     List<User> foundUsers = userRepository.findAll(Example.of(user));
+
+    if (foundUsers.size() == 0) {
+      throw new EntityNotFoundException();
+    }
+
     return foundUsers;
   }
 
@@ -33,14 +48,26 @@ public class UserController {
   public User save(
       @RequestParam(required = false) Integer id,
       @RequestParam(required = false) String username,
-      @RequestParam(required = false) String password,
-      @RequestParam(required = false) String role
+      @RequestParam(required = false) String password
   ) {
 
-    var user = new User(username,password,role);
+    var user = new User(username, password, ROLE);
 
     if (id != null) {
-      user.setId(id);
+      if (!userRepository.existsById(id)) {
+        throw new EntityNotFoundException();
+      }
+
+      var userPersisted = userRepository.getOne(id);
+
+      CopyPropertiesNotNull.copyProperties(user, userPersisted);
+    } else if (username == null || password == null ||
+                username.isEmpty() || password.isEmpty()) {
+      throw new NullValueException();
+    }
+
+    if (userRepository.existsByUsername(username)) {
+      throw new UsernameAlreadyExistsException();
     }
 
     userRepository.save(user);
@@ -50,6 +77,10 @@ public class UserController {
 
   @DeleteMapping
   public void deleteById(@RequestParam int id) {
+    if (!userRepository.existsById(id)) {
+      throw new EntityNotFoundException();
+    }
+
     userRepository.deleteById(id);
   }
 

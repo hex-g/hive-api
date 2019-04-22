@@ -6,5 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface UserRepository extends JpaRepository<User, Integer> {
-  User findById(int username);
+
+  User findByUsername(String username);
+
+  boolean existsByUsername(String username);
+
 }

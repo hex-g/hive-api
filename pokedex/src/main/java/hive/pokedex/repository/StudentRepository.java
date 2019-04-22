@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface StudentRepository extends JpaRepository<Student, Integer> {
 
-  Student findById(int id);
+  Student findByRa(String ra);
+  boolean existsByRa(String ra);
 
 }

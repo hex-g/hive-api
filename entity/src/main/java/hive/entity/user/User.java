@@ -1,9 +1,11 @@
 package hive.entity.user;
 
 import org.hibernate.annotations.Check;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
+@DynamicUpdate
 @Entity
 @Table(name = "tb_user")
 @Check(constraints = "role in ('STUDENT', 'PEDAGOGUE', 'ADMIN')")

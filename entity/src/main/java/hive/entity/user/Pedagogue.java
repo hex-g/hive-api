@@ -1,7 +1,10 @@
 package hive.entity.user;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 
+@DynamicUpdate
 @Entity
 @Table(name = "tb_pedagogue")
 public class Pedagogue {
