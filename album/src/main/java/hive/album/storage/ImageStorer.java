@@ -1,7 +1,6 @@
 package hive.album.storage;
 
-import hive.album.exception.ImageAlreadyExistException;
-import hive.album.exception.ImageNotFound;
+import hive.album.exception.*;
 import hive.album.exception.InvalidPathException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -14,34 +13,26 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
 
+import static hive.album.storage.ImageUtils.validateIfHasAnImageAsExtension;
+
 @Service
 public class ImageStorer {
   @Value("${hive.mugshot.image-directory-path}")
   private String rootDir;
-
   public void StoreImageProfile(String userDirectoryName,MultipartFile insertedImage,String imageStoredName){
+    verifyIfIsPayloadTooLarge(insertedImage.getSize());
+    //Fix the method for image name with spaces
+    verifyIfHasImageExtension(insertedImage.getOriginalFilename());
     this.createDirectoryIfNotExist(userDirectoryName);
     try {
-      var buff=ImageUtils.resizeImageToSquare(ImageIO.read(insertedImage.getInputStream()));
-      ImageIO.write(buff,"png", resolveRootPathFullUrlWith(userDirectoryName,imageStoredName).toFile());
-    }catch(FileAlreadyExistsException e){
+      var buff = ImageUtils.resizeImageToSquare(ImageIO.read(insertedImage.getInputStream()));
+      ImageIO.write(buff, "png", resolveRootPathFullUrlWith(userDirectoryName, imageStoredName).toFile());
+    } catch (FileAlreadyExistsException e) {
       throw new ImageAlreadyExistException();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-  private void createDirectoryIfNotExist(String userDirectoryPath){
-    Path parentDir = Paths.get(rootDir,userDirectoryPath);
-    if (!Files.exists(parentDir)) {
-      try {
-        Files.createDirectories(parentDir);
-      } catch (IOException e) {
-        throw new RuntimeException("Not capable to create the directory.\n"+e);
-      }
-    }
-  }
-
   public Resource loadImage(String userDirectoryName,String ImageName) {
     try {
       Path file = resolveRootPathFullUrlWith(userDirectoryName,ImageName);
@@ -56,11 +47,7 @@ public class ImageStorer {
       throw new InvalidPathException();
     }
   }
-  private Path resolveRootPathFullUrlWith(String userDirectoryName, String filename) {
-    return Paths.get(rootDir).resolve(userDirectoryName).resolve(filename);
-  }
-
-  public void deleteAllUserImages(String userDirectoryName,String ImageName) {
+  public void deleteImage(String userDirectoryName, String ImageName) {
     Path parentDir = resolveRootPathFullUrlWith(userDirectoryName,ImageName);
     try {
       Files.deleteIfExists(parentDir);
@@ -69,7 +56,29 @@ public class ImageStorer {
       throw new RuntimeException("Not capable to delete the directory.\n"+e);
     }
   }
-  public void ResizeImage(){
 
+
+  private void createDirectoryIfNotExist(String userDirectoryPath){
+    Path parentDir = Paths.get(rootDir,userDirectoryPath);
+    if (!Files.exists(parentDir)) {
+      try {
+        Files.createDirectories(parentDir);
+      } catch (IOException e) {
+        throw new RuntimeException("Not capable to create the directory.\n"+e);
+      }
+    }
+  }
+  private Path resolveRootPathFullUrlWith(String userDirectoryName, String filename) {
+    return Paths.get(rootDir).resolve(userDirectoryName).resolve(filename);
+  }
+  private void verifyIfIsPayloadTooLarge(long fileSize){
+    if(fileSize>(1024*1024+1)) {
+      throw new FileSizeException();
+    }
+  }
+  private void verifyIfHasImageExtension(String filename){
+    if(!validateIfHasAnImageAsExtension(filename)) {
+      throw new NotAcceptedFileFormatException();
+    }
   }
 }
