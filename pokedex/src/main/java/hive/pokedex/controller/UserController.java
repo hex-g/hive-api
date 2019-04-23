@@ -61,8 +61,8 @@ public class UserController {
       var userPersisted = userRepository.getOne(id);
 
       CopyPropertiesNotNull.copyProperties(user, userPersisted);
-    } else if (username == null || password == null ||
-                username.isEmpty() || password.isEmpty()) {
+    }else if (username == null || password == null ||
+        username.trim().isEmpty() || password.trim().isEmpty()) {
       throw new NullValueException();
     }
 

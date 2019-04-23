@@ -17,7 +17,7 @@ public class CopyPropertiesNotNull {
     Set<String> emptyNames = new HashSet();
     for(PropertyDescriptor attribute : attributes) {
       Object attributeValue = source.getPropertyValue(attribute.getName());
-      if (attributeValue != null){
+      if (attributeValue != null && !attributeValue.toString().trim().isBlank()){
         emptyNames.add(attribute.getName());
       }
     }

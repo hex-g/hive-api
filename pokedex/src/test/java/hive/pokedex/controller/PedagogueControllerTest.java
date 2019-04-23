@@ -117,6 +117,21 @@ public class PedagogueControllerTest {
   }
 
   @Test
+  public void givenPedagogueTriedSave_whenPedagogueInfoIsBlankOrWithSpacesIsRetrieved_then406IsReceived() throws Exception {
+    ResultActions response =
+        mockMvc.perform(
+            post("/pedagogue")
+                .param("name", " ")
+                .param("rm", " ")
+                .param("username", "  ")
+                .param("password", "  ")
+        );
+
+    response.andExpect(status().isNotAcceptable())
+        .andExpect(status().reason("Null value not allowed"));
+  }
+
+  @Test
   public void givenPedagogueTriedSave_whenPedagogueRmExistsIsRetrieved_then409IsReceived() throws Exception {
     when(pedagogueRepository.existsByRm("rm-test")).thenReturn(true);
 

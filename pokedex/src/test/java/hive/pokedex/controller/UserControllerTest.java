@@ -103,6 +103,19 @@ public class UserControllerTest {
   }
 
   @Test
+  public void givenUserTriedSave_whenUserInfoIsBlankOrWithSpacesIsRetrieved_then406IsReceived() throws Exception {
+    ResultActions response =
+        mockMvc.perform(
+            post("/user")
+                .param("username", "  ")
+                .param("password", "  ")
+        );
+
+    response.andExpect(status().isNotAcceptable())
+        .andExpect(status().reason("Null value not allowed"));
+  }
+
+  @Test
   public void givenUserTriedSave_whenUsernameExistsIsRetrieved_then409IsReceived() throws Exception {
     when(userRepository.existsByUsername("test")).thenReturn(true);
 

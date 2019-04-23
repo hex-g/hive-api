@@ -91,8 +91,8 @@ public class PedagogueController {
           pedagogue.getPerson().getUser(),
           pedagoguePersisted.getPerson().getUser()
       );
-    } else if (name == null || rm == null || username == null || password == null ||
-        name.isEmpty() || rm.isEmpty() || username.isEmpty() || password.isEmpty()) {
+    }else if (name == null || rm == null || username == null || password == null ||
+        name.trim().isEmpty() || rm.trim().isEmpty() || username.trim().isEmpty() || password.trim().isEmpty()) {
       throw new NullValueException();
     }
 

@@ -91,8 +91,8 @@ public class StudentController {
           student.getPerson().getUser(),
           studentPersisted.getPerson().getUser()
       );
-    } else if (name == null || ra == null || username == null || password == null ||
-        name.isEmpty() || ra.isEmpty() || username.isEmpty() || password.isEmpty()) {
+    }else if (name == null || ra == null || username == null || password == null || name.trim().isEmpty()
+        || ra.trim().isEmpty() || username.trim().isEmpty() || password.trim().isEmpty()) {
       throw new NullValueException();
     }
 

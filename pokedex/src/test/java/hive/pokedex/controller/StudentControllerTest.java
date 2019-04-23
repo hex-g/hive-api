@@ -116,6 +116,21 @@ public class StudentControllerTest {
   }
 
   @Test
+  public void givenStudentTriedSave_whenStudentInfoIsBlankOrWithSpacesIsRetrieved_then406IsReceived() throws Exception {
+    ResultActions response =
+        mockMvc.perform(
+            post("/student")
+                .param("name", " ")
+                .param("ra", " ")
+                .param("username", "  ")
+                .param("password", "  ")
+        );
+
+    response.andExpect(status().isNotAcceptable())
+        .andExpect(status().reason("Null value not allowed"));
+  }
+
+  @Test
   public void givenStudentTriedSave_whenStudentRaExistsIsRetrieved_then409IsReceived() throws Exception {
     when(studentRepository.existsByRa("ra-test")).thenReturn(true);
 
