@@ -1,10 +1,8 @@
 package hive.album.controller;
 
-import hive.album.exception.UserNotFoundException;
 import hive.album.repository.UserRepository;
 import hive.album.storage.ImageStorer;
 import hive.common.security.HiveHeaders;
-import hive.entity.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +44,6 @@ public class MugshotController {
   @DeleteMapping
   public void deleteProfileImage(@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
     var userID=userRepository.findByUsername(username).getId().toString();
-    imageStorer.deleteAllUserImages(userID,imageName);
+    imageStorer.deleteImage(userID,imageName);
   }
 }
