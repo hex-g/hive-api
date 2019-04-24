@@ -6,6 +6,7 @@ import hive.pokedex.exception.NullValueException;
 import hive.pokedex.exception.UsernameAlreadyExistsException;
 import hive.pokedex.repository.UserRepository;
 import hive.pokedex.util.CopyPropertiesNotNull;
+import hive.pokedex.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/admin/user")
 public class UserController {
 
   private final String ROLE = "ADMIN";
@@ -61,12 +62,12 @@ public class UserController {
       var userPersisted = userRepository.getOne(id);
 
       CopyPropertiesNotNull.copyProperties(user, userPersisted);
-    }else if (username == null || password == null ||
-        username.trim().isEmpty() || password.trim().isEmpty()) {
-      throw new NullValueException();
     }
 
-    if (userRepository.existsByUsername(username)) {
+    if (!Validation.isValid(user.getUsername()) ||
+        !Validation.isValid(user.getPassword())) {
+      throw new NullValueException();
+    }else if (userRepository.existsByUsername(username)) {
       throw new UsernameAlreadyExistsException();
     }
 

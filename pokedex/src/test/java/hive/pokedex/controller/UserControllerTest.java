@@ -2,6 +2,7 @@ package hive.pokedex.controller;
 
 import hive.entity.user.User;
 import hive.pokedex.repository.UserRepository;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +11,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.when;
@@ -37,109 +37,97 @@ public class UserControllerTest {
 
   @Test
   public void givenUserDoesNotExists_whenUserInfoIsRetrieved_then404IsReceived() throws Exception {
-    ResultActions response =
-        mockMvc.perform(
-            get("/user")
-                .param("username", "test")
-        );
 
-    response.andExpect(status().isNotFound())
+    mockMvc.perform(
+        get("/admin/user")
+            .param("username", "test")
+    ).andExpect(status().isNotFound())
         .andExpect(status().reason("Entity not found"));
+
   }
 
   @Test
   public void givenUserDoesNotExists_whenUserInfoUpdatedIsRetrieved_then404IsReceived() throws Exception {
-    ResultActions response =
-        mockMvc.perform(
-            post("/user")
-                .param("id", "3123")
-        );
 
-    response.andExpect(status().isNotFound())
+    mockMvc.perform(
+        post("/admin/user")
+            .param("id", "3123")
+    ).andExpect(status().isNotFound())
         .andExpect(status().reason("Entity not found"));
+
   }
 
   @Test
   public void givenUserExists_whenUserInfoUpdatedIsRetrieved_then200IsReceived() throws Exception {
     when(userRepository.existsById(1)).thenReturn(true);
 
-    var user = new User("test","123","STUDENT");
+    var user = new User("test", "123", "STUDENT");
     user.setId(1);
 
     when(userRepository.getOne(1)).thenReturn(user);
 
-    ResultActions response =
-        mockMvc.perform(
-            post("/user")
-                .param("id", "1")
-                .param("username","username-updated")
-        );
+    mockMvc.perform(
+        post("/admin/user")
+            .param("id", "1")
+            .param("username", "username-updated")
+    ).andExpect(status().isOk());
 
-    response.andExpect(status().isOk());
   }
 
   @Test
   public void givenUserTriedSave_whenNotUserInfoRetrieved_then406IsReceived() throws Exception {
-    ResultActions response =
-        mockMvc.perform(
-            post("/user")
-        );
 
-    response.andExpect(status().isNotAcceptable())
+    mockMvc.perform(
+        post("/admin/user")
+    ).andExpect(status().isNotAcceptable())
         .andExpect(status().reason("Null value not allowed"));
+
   }
 
   @Test
   public void givenUserTriedSave_whenUserInfoIsEmptyIsRetrieved_then406IsReceived() throws Exception {
-    ResultActions response =
-        mockMvc.perform(
-            post("/user")
-                .param("username", "")
-                .param("password", "")
-        );
 
-    response.andExpect(status().isNotAcceptable())
+    mockMvc.perform(
+        post("/admin/user")
+            .param("username", "")
+            .param("password", "")
+    ).andExpect(status().isNotAcceptable())
         .andExpect(status().reason("Null value not allowed"));
+
   }
 
   @Test
   public void givenUserTriedSave_whenUserInfoIsBlankOrWithSpacesIsRetrieved_then406IsReceived() throws Exception {
-    ResultActions response =
-        mockMvc.perform(
-            post("/user")
-                .param("username", "  ")
-                .param("password", "  ")
-        );
 
-    response.andExpect(status().isNotAcceptable())
+    mockMvc.perform(
+        post("/admin/user")
+            .param("username", "  ")
+            .param("password", "  ")
+    ).andExpect(status().isNotAcceptable())
         .andExpect(status().reason("Null value not allowed"));
+
   }
 
   @Test
   public void givenUserTriedSave_whenUsernameExistsIsRetrieved_then409IsReceived() throws Exception {
     when(userRepository.existsByUsername("test")).thenReturn(true);
 
-    ResultActions response =
-        mockMvc.perform(
-            post("/user")
-                .param("username", "test")
-                .param("password", "123")
-        );
-
-    response.andExpect(status().isConflict())
+    mockMvc.perform(
+        post("/admin/user")
+            .param("username", "test")
+            .param("password", "123")
+    ).andExpect(status().isConflict())
         .andExpect(status().reason("Username already registered, try again"));
 
   }
 
   @Test
   public void givenUserDoesNotExists_whenDeleteUserIdIsRetrieved_then404IsReceived() throws Exception {
-    ResultActions response =
-        mockMvc.perform(
-            delete("/user")
-                .param("id", "1")
-        );
 
-    response.andExpect(status().isNotFound())
+    mockMvc.perform(
+        delete("/admin/user")
+            .param("id", "1")
+    ).andExpect(status().isNotFound())
         .andExpect(status().reason("Entity not found"));
 
   }

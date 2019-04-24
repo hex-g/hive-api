@@ -10,6 +10,7 @@ import hive.pokedex.exception.UsernameAlreadyExistsException;
 import hive.pokedex.repository.StudentRepository;
 import hive.pokedex.repository.UserRepository;
 import hive.pokedex.util.CopyPropertiesNotNull;
+import hive.pokedex.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/student")
+@RequestMapping("/admin/student")
 public class StudentController {
 
   private final String ROLE = "STUDENT";
@@ -91,12 +92,14 @@ public class StudentController {
           student.getPerson().getUser(),
           studentPersisted.getPerson().getUser()
       );
-    }else if (name == null || ra == null || username == null || password == null || name.trim().isEmpty()
-        || ra.trim().isEmpty() || username.trim().isEmpty() || password.trim().isEmpty()) {
-      throw new NullValueException();
     }
 
-    if (studentRepository.existsByRa(ra)) {
+    if (!Validation.isValid(student.getRa()) ||
+        !Validation.isValid(student.getPerson().getName()) ||
+        !Validation.isValid(student.getPerson().getUser().getUsername()) ||
+        !Validation.isValid(student.getPerson().getUser().getPassword())) {
+      throw new NullValueException();
+    }else if (studentRepository.existsByRa(ra)) {
       throw new EntityAlreadyExistsException();
     }else if (userRepository.existsByUsername(username)) {
       throw new UsernameAlreadyExistsException();

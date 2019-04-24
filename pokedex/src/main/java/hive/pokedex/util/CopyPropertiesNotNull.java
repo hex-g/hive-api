@@ -8,7 +8,7 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CopyPropertiesNotNull {
+public final class CopyPropertiesNotNull {
 
   public static String[] getNullAttributes (Object dest) {
     BeanWrapper source = new BeanWrapperImpl(dest);

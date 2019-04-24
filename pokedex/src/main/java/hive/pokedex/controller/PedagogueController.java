@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static hive.pokedex.util.Validation.*;
+
 @RestController
-@RequestMapping("/pedagogue")
+@RequestMapping("/admin/pedagogue")
 public class PedagogueController {
 
   private final String ROLE = "PEDAGOGUE";
@@ -91,14 +93,16 @@ public class PedagogueController {
           pedagogue.getPerson().getUser(),
           pedagoguePersisted.getPerson().getUser()
       );
-    }else if (name == null || rm == null || username == null || password == null ||
-        name.trim().isEmpty() || rm.trim().isEmpty() || username.trim().isEmpty() || password.trim().isEmpty()) {
-      throw new NullValueException();
     }
 
-    if (pedagogueRepository.existsByRm(rm)) {
+    if (!isValid(pedagogue.getRm()) ||
+        !isValid(pedagogue.getPerson().getName()) ||
+        !isValid(pedagogue.getPerson().getUser().getUsername()) ||
+        !isValid(pedagogue.getPerson().getUser().getPassword())) {
+      throw new NullValueException();
+    } else if (pedagogueRepository.existsByRm(rm)) {
       throw new EntityAlreadyExistsException();
-    }else if (userRepository.existsByUsername(username)) {
+    } else if (userRepository.existsByUsername(username)) {
       throw new UsernameAlreadyExistsException();
     }
 
