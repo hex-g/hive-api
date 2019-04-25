@@ -164,4 +164,15 @@ public class StudentControllerTest {
         .andExpect(status().reason("Entity not found"));
 
   }
+
+  @Test
+  public void givenStudentExists_whenDeleteStudentIdIsRetrieved_then200IsReceived() throws Exception {
+    when(studentRepository.existsById(1)).thenReturn(true);
+
+    mockMvc.perform(
+        delete("/admin/student")
+            .param("id", "1")
+    ).andExpect(status().isOk());
+
+  }
 }

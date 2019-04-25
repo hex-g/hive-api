@@ -12,10 +12,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Example;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,6 +88,8 @@ public class PedagogueControllerTest {
             .param("username", "username-updated")
             .param("password", "password-updated")
     ).andExpect(status().isOk());
+
+    when(pedagogueRepository.save(pedagogue)).thenReturn(pedagogue);
 
   }
 
@@ -162,6 +169,17 @@ public class PedagogueControllerTest {
             .param("id", "1")
     ).andExpect(status().isNotFound())
         .andExpect(status().reason("Entity not found"));
+
+  }
+
+  @Test
+  public void givenPedagogueExists_whenDeletePedagogueIdIsRetrieved_then200IsReceived() throws Exception {
+    when(pedagogueRepository.existsById(1)).thenReturn(true);
+
+    mockMvc.perform(
+        delete("/admin/pedagogue")
+            .param("id", "1")
+    ).andExpect(status().isOk());
 
   }
 

@@ -131,4 +131,16 @@ public class UserControllerTest {
         .andExpect(status().reason("Entity not found"));
 
   }
+
+  @Test
+  public void givenUserExists_whenDeleteUserIdIsRetrieved_then200IsReceived() throws Exception {
+    when(userRepository.existsById(1)).thenReturn(true);
+
+    mockMvc.perform(
+        delete("/admin/user")
+            .param("id", "1")
+    ).andExpect(status().isOk());
+
+  }
+
 }
