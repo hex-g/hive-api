@@ -28,10 +28,13 @@ public class PedagogueController {
 
   private UserRepository userRepository;
 
+  private List<Pedagogue> foundPedagogues;
+
   @Autowired
-  public PedagogueController(PedagogueRepository pedagogueRepository, UserRepository userRepository) {
+  public PedagogueController(PedagogueRepository pedagogueRepository, UserRepository userRepository, List<Pedagogue> pedagogues) {
     this.pedagogueRepository = pedagogueRepository;
     this.userRepository = userRepository;
+    this.foundPedagogues = pedagogues;
   }
 
   @GetMapping
@@ -50,8 +53,9 @@ public class PedagogueController {
 
     pedagogue.setPerson(person);
 
-    List<Pedagogue> foundPedagogues = pedagogueRepository.findAll(Example.of(pedagogue));
+    foundPedagogues = pedagogueRepository.findAll(Example.of(pedagogue));
 
+    System.out.println(foundPedagogues.isEmpty());
     if (foundPedagogues.isEmpty()) {
       throw new EntityNotFoundException();
     }

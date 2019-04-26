@@ -10,9 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -20,8 +22,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,6 +34,8 @@ public class PedagogueControllerTest {
   private PedagogueRepository pedagogueRepository;
   @Mock
   private UserRepository userRepository;
+  @Mock
+  private List<Pedagogue> pedagogues;
 
   private MockMvc mockMvc;
 
@@ -40,7 +43,7 @@ public class PedagogueControllerTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
 
-    var pedagogueController = new PedagogueController(pedagogueRepository, userRepository);
+    var pedagogueController = new PedagogueController(pedagogueRepository, userRepository, pedagogues);
 
     mockMvc = MockMvcBuilders.standaloneSetup(pedagogueController).build();
   }
@@ -57,7 +60,19 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueDoesNotExists_whenPedagogueInfoUpdatedIsRetrieved_then404IsReceived() throws Exception {
+  public void givenPedagogueExists_whenPedagogueInfoIsRetrieved_then200IsReceived() throws Exception {
+    pedagogues = mock(List.class);
+    when(pedagogues.isEmpty()).thenReturn(false);
+
+    mockMvc.perform(
+            get("/admin/pedagogue")
+                    .param("rm", "test")
+    ).andExpect(status().isOk());
+
+  }
+
+  @Test
+  public void givenPedagogueDoesNotExists_whenPedagogueUpdatedInfoIsRetrieved_then404IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/pedagogue")
@@ -68,7 +83,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueExists_whenPedagogueInfoUpdatedIsRetrieved_then200IsReceived() throws Exception {
+  public void givenPedagogueExists_whenPedagogueUpdatedInfoIsRetrieved_then200IsReceived() throws Exception {
     when(pedagogueRepository.existsById(1)).thenReturn(true);
 
     var pedagogue = new Pedagogue("rm");
@@ -94,7 +109,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueTriedSave_whenNotPedagogueInfoRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSavePedagogue_whenNoPedagogueInfoRetrieved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/pedagogue")
@@ -104,7 +119,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueTriedSave_whenPedagogueInfoIsEmptyIsRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSavePedagogue_whenEmptyPedagogueInfoIsRetrieved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/pedagogue")
@@ -118,7 +133,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueTriedSave_whenPedagogueInfoIsBlankOrWithSpacesIsRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSavePedagogue_whenPedagogueInfoOnlyWhiteSpacesIsRetrieved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/pedagogue")
@@ -132,7 +147,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueTriedSave_whenPedagogueRmExistsIsRetrieved_then409IsReceived() throws Exception {
+  public void givenTriedToSavePedagogue_whenExistentPedagogueRmIsRetrieved_then409IsReceived() throws Exception {
     when(pedagogueRepository.existsByRm("rm-test")).thenReturn(true);
 
     mockMvc.perform(
@@ -147,7 +162,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueTriedSave_whenPedagogueUsernameExistsIsRetrieved_then409IsReceived() throws Exception {
+  public void givenTriedToSavePedagogue_whenExistentPedagogueUsernameIsRetrieved_then409IsReceived() throws Exception {
     when(userRepository.existsByUsername("test")).thenReturn(true);
 
     mockMvc.perform(
@@ -162,7 +177,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueDoesNotExists_whenDeletePedagogueIdIsRetrieved_then404IsReceived() throws Exception {
+  public void givenPedagogueDoesNotExists_whenDeletePedagogueByIdIsRetrieved_then404IsReceived() throws Exception {
 
     mockMvc.perform(
         delete("/admin/pedagogue")
@@ -173,7 +188,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueExists_whenDeletePedagogueIdIsRetrieved_then200IsReceived() throws Exception {
+  public void givenPedagogueExists_whenDeletePedagogueByIdIsRetrieved_then200IsReceived() throws Exception {
     when(pedagogueRepository.existsById(1)).thenReturn(true);
 
     mockMvc.perform(

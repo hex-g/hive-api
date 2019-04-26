@@ -47,7 +47,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenUserDoesNotExists_whenUserInfoUpdatedIsRetrieved_then404IsReceived() throws Exception {
+  public void givenUserDoesNotExists_whenUserUpdatedInfoIsRetrieved_then404IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/user")
@@ -58,10 +58,10 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenUserExists_whenUserInfoUpdatedIsRetrieved_then200IsReceived() throws Exception {
+  public void givenUserExists_whenUserUpdatedInfoIsRetrieved_then200IsReceived() throws Exception {
     when(userRepository.existsById(1)).thenReturn(true);
 
-    var user = new User("test", "123", "STUDENT");
+    var user = new User("test", "123", "ADMIN");
     user.setId(1);
 
     when(userRepository.getOne(1)).thenReturn(user);
@@ -75,7 +75,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenUserTriedSave_whenNotUserInfoRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSaveUser_whenNoUserInfoRetrieved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/user")
@@ -85,7 +85,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenUserTriedSave_whenUserInfoIsEmptyIsRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSaveUser_whenEmptyUserInfoIsRetrieved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/user")
@@ -97,7 +97,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenUserTriedSave_whenUserInfoIsBlankOrWithSpacesIsRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSaveUser_whenUserInfoOnlyWhiteSpacesIsRetrieved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/user")
@@ -109,7 +109,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenUserTriedSave_whenUsernameExistsIsRetrieved_then409IsReceived() throws Exception {
+  public void givenTriedToSaveUser_whenExistentUsernameIsRetrieved_then409IsReceived() throws Exception {
     when(userRepository.existsByUsername("test")).thenReturn(true);
 
     mockMvc.perform(
@@ -122,7 +122,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenUserDoesNotExists_whenDeleteUserIdIsRetrieved_then404IsReceived() throws Exception {
+  public void givenUserDoesNotExists_whenDeleteUserByIdIsRetrieved_then404IsReceived() throws Exception {
 
     mockMvc.perform(
         delete("/admin/user")
@@ -133,7 +133,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenUserExists_whenDeleteUserIdIsRetrieved_then200IsReceived() throws Exception {
+  public void givenUserExists_whenDeleteUserByIdIsRetrieved_then200IsReceived() throws Exception {
     when(userRepository.existsById(1)).thenReturn(true);
 
     mockMvc.perform(
