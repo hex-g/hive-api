@@ -1,5 +1,6 @@
 package hive.album.controller;
 
+import hive.album.exception.NotAcceptedFileFormatException;
 import hive.album.repository.UserRepository;
 import hive.album.storage.ImageStorer;
 import hive.common.security.HiveHeaders;
@@ -13,28 +14,37 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
 
+import static hive.album.storage.ImageUtils.validateIfHasAnImageAsExtension;
+
 @RestController
 @RequestMapping("/mugshot")
 public class MugshotController {
   @Value("${hive.mugshot.image-directory-path}")
   private String rootDir;
+  @Value("${hive.mugshot.profile-image-name}")
+  private String imageName;
   private final ImageStorer imageStorer;
   private final UserRepository userRepository;
-  private String imageName="ProfileImage.jpg";
   @Autowired public MugshotController(ImageStorer imageStorer,UserRepository userRepository) {
     this.userRepository = userRepository;
     this.imageStorer = imageStorer;
   }
 
-  @ResponseStatus(code = HttpStatus.OK, reason = "Profile image Stored In Success")
+  @ResponseStatus(code = HttpStatus.OK, reason = "Profile image successfully stored")
   @PostMapping
-  public void sendImageProfile(@RequestParam("image") MultipartFile insertedImage, @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+  public void sendImageProfile(
+      @RequestParam("image") MultipartFile insertedImage,
+      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+    if(!validateIfHasAnImageAsExtension(insertedImage.getOriginalFilename())) {
+      throw new NotAcceptedFileFormatException();
+    }
     var userID=userRepository.findByUsername(username).getId().toString();
     imageStorer.StoreImageProfile(userID,insertedImage,imageName);
   }
 
   @GetMapping(produces = MediaType.IMAGE_JPEG_VALUE)
-  public ResponseEntity<Resource> searchProfileImage(@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+  public ResponseEntity<Resource> searchProfileImage(
+      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
     var userID=userRepository.findByUsername(username).getId().toString();
     Resource file = imageStorer.loadImage(userID,imageName);
     return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
@@ -42,7 +52,8 @@ public class MugshotController {
 
   @ResponseStatus(code = HttpStatus.NO_CONTENT, reason = "Profile image successfully deleted")
   @DeleteMapping
-  public void deleteProfileImage(@RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+  public void deleteProfileImage(
+      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
     var userID=userRepository.findByUsername(username).getId().toString();
     imageStorer.deleteImage(userID,imageName);
   }
