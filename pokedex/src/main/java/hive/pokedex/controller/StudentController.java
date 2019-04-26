@@ -9,7 +9,7 @@ import hive.pokedex.exception.NullValueException;
 import hive.pokedex.exception.UsernameAlreadyExistsException;
 import hive.pokedex.repository.StudentRepository;
 import hive.pokedex.repository.UserRepository;
-import hive.pokedex.util.CopyPropertiesNotNull;
+import hive.pokedex.util.FillNullValues;
 import hive.pokedex.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -81,14 +81,14 @@ public class StudentController {
 
       var studentPersisted = studentRepository.getOne(id);
 
-      CopyPropertiesNotNull.copyProperties(student, studentPersisted);
+      FillNullValues.copyProperties(student, studentPersisted);
 
-      CopyPropertiesNotNull.copyProperties(
+      FillNullValues.copyProperties(
           student.getPerson(),
           studentPersisted.getPerson()
       );
 
-      CopyPropertiesNotNull.copyProperties(
+      FillNullValues.copyProperties(
           student.getPerson().getUser(),
           studentPersisted.getPerson().getUser()
       );

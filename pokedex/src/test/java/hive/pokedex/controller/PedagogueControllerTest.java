@@ -1,5 +1,7 @@
 package hive.pokedex.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import hive.entity.user.Pedagogue;
 import hive.entity.user.Person;
 import hive.entity.user.User;
@@ -10,18 +12,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,16 +37,16 @@ public class PedagogueControllerTest {
   private PedagogueRepository pedagogueRepository;
   @Mock
   private UserRepository userRepository;
-  @Mock
-  private List<Pedagogue> pedagogues;
 
   private MockMvc mockMvc;
+
+  private final Type type = new TypeToken<List<Pedagogue>>() {}.getType();
 
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
 
-    var pedagogueController = new PedagogueController(pedagogueRepository, userRepository, pedagogues);
+    var pedagogueController = new PedagogueController(pedagogueRepository, userRepository);
 
     mockMvc = MockMvcBuilders.standaloneSetup(pedagogueController).build();
   }
@@ -60,14 +63,21 @@ public class PedagogueControllerTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void givenPedagogueExists_whenPedagogueInfoIsRetrieved_then200IsReceived() throws Exception {
-    pedagogues = mock(List.class);
-    when(pedagogues.isEmpty()).thenReturn(false);
 
-    mockMvc.perform(
-            get("/admin/pedagogue")
-                    .param("rm", "test")
-    ).andExpect(status().isOk());
+    List<Pedagogue> pedagogueList = new ArrayList<>();
+    pedagogueList.add(new Pedagogue("rm-select-test"));
+
+    when(pedagogueRepository.findAll((Example<Pedagogue>) any())).thenReturn(pedagogueList);
+
+    MvcResult result = mockMvc.perform(
+        get("/admin/pedagogue")
+    ).andExpect(status().isOk()).andReturn();
+
+    List<Pedagogue> resultList = new Gson().fromJson(result.getResponse().getContentAsString(), type);
+
+    assertEquals(resultList.get(0).getRm(), pedagogueList.get(0).getRm());
 
   }
 

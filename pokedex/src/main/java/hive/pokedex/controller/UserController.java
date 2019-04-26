@@ -5,7 +5,7 @@ import hive.pokedex.exception.EntityNotFoundException;
 import hive.pokedex.exception.NullValueException;
 import hive.pokedex.exception.UsernameAlreadyExistsException;
 import hive.pokedex.repository.UserRepository;
-import hive.pokedex.util.CopyPropertiesNotNull;
+import hive.pokedex.util.FillNullValues;
 import hive.pokedex.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -61,7 +61,7 @@ public class UserController {
 
       var userPersisted = userRepository.getOne(id);
 
-      CopyPropertiesNotNull.copyProperties(user, userPersisted);
+      FillNullValues.copyProperties(user, userPersisted);
     }
 
     if (!Validation.isValid(user.getUsername()) ||

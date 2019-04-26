@@ -8,9 +8,9 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class CopyPropertiesNotNull {
+public final class FillNullValues {
 
-  public static String[] getNullAttributes (Object dest) {
+  public static String[] getNotNullAttributes (Object dest) {
     BeanWrapper source = new BeanWrapperImpl(dest);
     PropertyDescriptor[] attributes = source.getPropertyDescriptors();
 
@@ -25,7 +25,7 @@ public final class CopyPropertiesNotNull {
   }
 
   public static void copyProperties(Object destiny, Object origin) {
-    BeanUtils.copyProperties(origin, destiny, getNullAttributes(destiny));
+    BeanUtils.copyProperties(origin, destiny, getNotNullAttributes(destiny));
   }
 
 }

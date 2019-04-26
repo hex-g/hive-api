@@ -9,7 +9,7 @@ import hive.pokedex.exception.NullValueException;
 import hive.pokedex.exception.UsernameAlreadyExistsException;
 import hive.pokedex.repository.PedagogueRepository;
 import hive.pokedex.repository.UserRepository;
-import hive.pokedex.util.CopyPropertiesNotNull;
+import hive.pokedex.util.FillNullValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +28,10 @@ public class PedagogueController {
 
   private UserRepository userRepository;
 
-  private List<Pedagogue> foundPedagogues;
-
   @Autowired
-  public PedagogueController(PedagogueRepository pedagogueRepository, UserRepository userRepository, List<Pedagogue> pedagogues) {
+  public PedagogueController(PedagogueRepository pedagogueRepository, UserRepository userRepository) {
     this.pedagogueRepository = pedagogueRepository;
     this.userRepository = userRepository;
-    this.foundPedagogues = pedagogues;
   }
 
   @GetMapping
@@ -53,9 +50,8 @@ public class PedagogueController {
 
     pedagogue.setPerson(person);
 
-    foundPedagogues = pedagogueRepository.findAll(Example.of(pedagogue));
+    var foundPedagogues = pedagogueRepository.findAll(Example.of(pedagogue));
 
-    System.out.println(foundPedagogues.isEmpty());
     if (foundPedagogues.isEmpty()) {
       throw new EntityNotFoundException();
     }
@@ -86,14 +82,14 @@ public class PedagogueController {
 
       var pedagoguePersisted = pedagogueRepository.getOne(id);
 
-      CopyPropertiesNotNull.copyProperties(pedagogue, pedagoguePersisted);
+      FillNullValues.copyProperties(pedagogue, pedagoguePersisted);
 
-      CopyPropertiesNotNull.copyProperties(
+      FillNullValues.copyProperties(
           pedagogue.getPerson(),
           pedagoguePersisted.getPerson()
       );
 
-      CopyPropertiesNotNull.copyProperties(
+      FillNullValues.copyProperties(
           pedagogue.getPerson().getUser(),
           pedagoguePersisted.getPerson().getUser()
       );

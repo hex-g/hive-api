@@ -1,5 +1,7 @@
 package hive.pokedex.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import hive.entity.user.User;
 import hive.pokedex.repository.UserRepository;
 
@@ -9,10 +11,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Example;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,6 +35,9 @@ public class UserControllerTest {
   private UserRepository userRepository;
 
   private MockMvc mockMvc;
+
+  private final Type type = new TypeToken<List<User>>() {}.getType();
+  private final String ROLE = "ADMIN";
 
   @Before
   public void setup() {
@@ -47,6 +60,25 @@ public class UserControllerTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  public void givenStudentExists_whenStudentInfoIsRetrieved_then200IsReceived() throws Exception {
+
+    List<User> userList = new ArrayList<>();
+    userList.add(new User("username-test-select","password",ROLE));
+
+    when(userRepository.findAll((Example<User>) any())).thenReturn(userList);
+
+    MvcResult result = mockMvc.perform(
+        get("/admin/user")
+    ).andExpect(status().isOk()).andReturn();
+
+    List<User> resultList = new Gson().fromJson(result.getResponse().getContentAsString(), type);
+
+    assertEquals(resultList.get(0).getUsername(), userList.get(0).getUsername());
+
+  }
+
+  @Test
   public void givenUserDoesNotExists_whenUserUpdatedInfoIsRetrieved_then404IsReceived() throws Exception {
 
     mockMvc.perform(
@@ -61,7 +93,7 @@ public class UserControllerTest {
   public void givenUserExists_whenUserUpdatedInfoIsRetrieved_then200IsReceived() throws Exception {
     when(userRepository.existsById(1)).thenReturn(true);
 
-    var user = new User("test", "123", "ADMIN");
+    var user = new User("test", "123", ROLE);
     user.setId(1);
 
     when(userRepository.getOne(1)).thenReturn(user);
