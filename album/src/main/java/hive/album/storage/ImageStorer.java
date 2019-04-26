@@ -13,22 +13,17 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
 
-import static hive.album.storage.ImageUtils.validateIfHasAnImageAsExtension;
-
 @Service
 public class ImageStorer {
   @Value("${hive.mugshot.image-directory-path}")
   private String rootDir;
+  @Value("${hive.mugshot.profile-image-dimension}")
+  private int imageSizeInPixels;
   public void StoreImageProfile(String userDirectoryName,MultipartFile insertedImage,String imageStoredName){
-    verifyIfIsPayloadTooLarge(insertedImage.getSize());
-    //Fix the method for image name with spaces
-    verifyIfHasImageExtension(insertedImage.getOriginalFilename());
     this.createDirectoryIfNotExist(userDirectoryName);
     try {
-      var buff = ImageUtils.resizeImageToSquare(ImageIO.read(insertedImage.getInputStream()));
+      var buff = ImageUtils.resizeImageToSquare(ImageIO.read(insertedImage.getInputStream()),imageSizeInPixels);
       ImageIO.write(buff, "png", resolveRootPathFullUrlWith(userDirectoryName, imageStoredName).toFile());
-    } catch (FileAlreadyExistsException e) {
-      throw new ImageAlreadyExistException();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -70,15 +65,5 @@ public class ImageStorer {
   }
   private Path resolveRootPathFullUrlWith(String userDirectoryName, String filename) {
     return Paths.get(rootDir).resolve(userDirectoryName).resolve(filename);
-  }
-  private void verifyIfIsPayloadTooLarge(long fileSize){
-    if(fileSize>(1024*1024+1)) {
-      throw new FileSizeException();
-    }
-  }
-  private void verifyIfHasImageExtension(String filename){
-    if(!validateIfHasAnImageAsExtension(filename)) {
-      throw new NotAcceptedFileFormatException();
-    }
   }
 }
