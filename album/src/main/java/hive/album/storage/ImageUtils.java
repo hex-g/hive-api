@@ -1,20 +1,23 @@
 package hive.album.storage;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ImageUtils {
-  private static int imageSizeInPixels =256;
+public final class ImageUtils {
   private static final String IMAGE_PATTERN = "(.+\\.(gif|png|bmp|jpeg|jpg)$)";
+  private ImageUtils(){
+  }
   public static boolean validateIfHasAnImageAsExtension(final String image){
     var pattern = Pattern.compile(IMAGE_PATTERN);
     var matcher = pattern.matcher(image);
     return matcher.matches();
   }
 
-  public static BufferedImage resizeImageToSquare(BufferedImage inputtedImage) {
+  public static BufferedImage resizeImageToSquare(BufferedImage inputtedImage,int imageSizeInPixels) {
     // multi-pass bilinear div 2
     var bufferedImageWithNewSize = new BufferedImage(imageSizeInPixels, imageSizeInPixels, BufferedImage.TYPE_INT_RGB);
     var reSizer = bufferedImageWithNewSize.createGraphics();
@@ -23,7 +26,7 @@ public class ImageUtils {
     reSizer.dispose();
     return bufferedImageWithNewSize;
   }
-  private BufferedImage generateRandomImage(){
+  public static BufferedImage generateRandomImage(){
     var img=new BufferedImage(4,4,BufferedImage.TYPE_INT_RGB);
     var maxH=img.getHeight();
     var maxV=img.getWidth();
@@ -38,7 +41,7 @@ public class ImageUtils {
     }
     return img;
   }
-  private BufferedImage generateRandomBWImage(){
+  public static BufferedImage generateRandomBWImage(){
     var img=new BufferedImage(9,9,BufferedImage.TYPE_INT_RGB);
     var maxH=img.getHeight();
     var maxV=img.getWidth();
