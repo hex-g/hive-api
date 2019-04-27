@@ -17,6 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.junit.Assert.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ImageStorerTest {
@@ -47,24 +49,24 @@ public class ImageStorerTest {
   }
 
   @Test
-  public void uploadImage_WhenImageNameAndUserDirectoryIsNotNull_expectExistenceOfFile(){
+  public void uploadImage_WhenImageNameAndUserDirectoryIsNotNull_expectFileExists(){
     imageStorer.storeImageProfile(userId.toString(),multipartFile,imageName);
     Path path=Paths.get(rootDir,userId.toString(),imageName);
-    Assert.assertTrue(Files.exists(path));
+    assertTrue(Files.exists(path));
   }
 
   @Test
-  public void deleteImage_WhenImageNameAndUserDirectoryIsNotNull_expectNoExistenceOfFile(){
+  public void deleteImage_WhenImageNameAndUserDirectoryIsNotNull_expectFileDoesNotExists(){
     imageStorer.deleteImage(userId.toString(),imageName);
     Path path=Paths.get(rootDir,userId.toString(),imageName);
-    Assert.assertFalse(Files.exists(path));
+    assertFalse(Files.exists(path));
   }
 
   @Test
   public void loadImage_WhenMultipartIsNotNull_expectConfiguredImageName() throws IOException {
     imageStorer.storeImageProfile(userId.toString(),multipartFile,imageName);
     var resource=imageStorer.loadImage(userId.toString(),imageName);
-    Assert.assertEquals(imageName,resource.getFile().getName());
+    assertEquals(imageName,resource.getFile().getName());
   }
 
   @Test
@@ -72,8 +74,8 @@ public class ImageStorerTest {
     imageStorer.storeImageProfile(userId.toString(),multipartFile,imageName);
     var resource=imageStorer.loadImage(userId.toString(),imageName);
     var image=ImageIO.read(resource.getFile());
-    Assert.assertEquals(imageSizeInPixels,image.getHeight());
-    Assert.assertEquals(imageSizeInPixels,image.getWidth());
+    assertEquals(imageSizeInPixels,image.getHeight());
+    assertEquals(imageSizeInPixels,image.getWidth());
   }
 
   @After
