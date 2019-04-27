@@ -38,7 +38,7 @@ public class UserController {
 
     List<User> foundUsers = userRepository.findAll(Example.of(user));
 
-    if (foundUsers.size() == 0) {
+    if (foundUsers.isEmpty()) {
       throw new EntityNotFoundException();
     }
 
