@@ -83,7 +83,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenStudentDoesNotExists_whenStudentUpdatedInfoIsRetrieved_then404IsReceived() throws Exception {
+  public void givenStudentDoesNotExists_whenStudentUpdatedInfoIsProvided_then404IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/student")
@@ -94,7 +94,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenStudentExists_whenStudentUpdatedInfoIsRetrieved_then200IsReceived() throws Exception {
+  public void givenStudentExists_whenStudentUpdatedInfoIsProvided_then200IsReceived() throws Exception {
     when(studentRepository.existsById(1)).thenReturn(true);
 
     var student = new Student("ra");
@@ -118,7 +118,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenNoStudentInfoRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSaveStudent_whenNoStudentInfoIsProvided_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/student")
@@ -128,7 +128,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenEmptyStudentInfoIsRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSaveStudent_whenEmptyStudentInfoIsProvided_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/student")
@@ -142,7 +142,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenStudentInfoOnlyWhiteSpacesIsRetrieved_then406IsReceived() throws Exception {
+  public void givenTriedToSaveStudent_whenStudentInfoOnlyWhiteSpacesIsProvided_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/student")
@@ -156,7 +156,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenExistentStudentRaIsRetrieved_then409IsReceived() throws Exception {
+  public void givenTriedToSaveStudent_whenExistentStudentRaIsProvided_then409IsReceived() throws Exception {
     when(studentRepository.existsByRa("ra-test")).thenReturn(true);
 
     mockMvc.perform(
@@ -166,12 +166,12 @@ public class StudentControllerTest {
             .param("username", "test")
             .param("password", "test")
     ).andExpect(status().isConflict())
-        .andExpect(status().reason("Entity already registered, try again"));
+        .andExpect(status().reason("Entity already registered"));
 
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenExistentStudentUsernameIsRetrieved_then409IsReceived() throws Exception {
+  public void givenTriedToSaveStudent_whenExistentStudentUsernameIsProvided_then409IsReceived() throws Exception {
     when(userRepository.existsByUsername("test")).thenReturn(true);
 
     mockMvc.perform(
@@ -181,12 +181,12 @@ public class StudentControllerTest {
             .param("username", "test")
             .param("password", "test")
     ).andExpect(status().isConflict())
-        .andExpect(status().reason("Username already registered, try again"));
+        .andExpect(status().reason("Username already registered"));
 
   }
 
   @Test
-  public void givenStudentDoesNotExists_whenDeleteStudentByIdIsRetrieved_then404IsReceived() throws Exception {
+  public void givenStudentDoesNotExists_whenDeleteStudentById_then404IsReceived() throws Exception {
 
     mockMvc.perform(
         delete("/admin/student")
@@ -197,7 +197,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenStudentExists_whenDeleteStudentByIdIsRetrieved_then200IsReceived() throws Exception {
+  public void givenStudentExists_whenDeleteStudentById_then200IsReceived() throws Exception {
     when(studentRepository.existsById(1)).thenReturn(true);
 
     mockMvc.perform(
