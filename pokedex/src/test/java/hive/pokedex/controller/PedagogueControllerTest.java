@@ -167,7 +167,7 @@ public class PedagogueControllerTest {
             .param("username", "test")
             .param("password", "test")
     ).andExpect(status().isConflict())
-        .andExpect(status().reason("Entity already registered, try again"));
+        .andExpect(status().reason("Entity already registered"));
 
   }
 
@@ -182,7 +182,7 @@ public class PedagogueControllerTest {
             .param("username", "test")
             .param("password", "test")
     ).andExpect(status().isConflict())
-        .andExpect(status().reason("Username already registered, try again"));
+        .andExpect(status().reason("Username already registered"));
 
   }
 
