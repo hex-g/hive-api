@@ -5,5 +5,6 @@ include 'common'
 include 'gateway'
 include 'naming-server'
 include 'entity'
-include 'album'
-
+include 'kirby'
+include 'pokedex'
+include 'mugshot'
