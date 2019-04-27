@@ -50,14 +50,6 @@ public class UtilsControllerTest {
   }
 
   @Test
-  public void givenRequestWithOkResponseAsDefault_whenVerifyIfTheServeIsOk_then200isReturned() throws Exception{
-    mockMvc
-        .perform(
-            get("/utils/hey")
-        )
-        .andExpect(status().isOk());
-  }
-  @Test
   public void givenUserName_whenRequestGeneratedImage_then200isReturned() throws Exception{
     mockMvc
         .perform(
@@ -67,4 +59,5 @@ public class UtilsControllerTest {
         .andExpect(status().isOk())
         .andDo(print());
   }
+
 }
