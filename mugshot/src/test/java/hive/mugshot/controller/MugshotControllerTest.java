@@ -74,7 +74,6 @@ public class MugshotControllerTest {
     validDirectoryName = (rootDir + "/" + user.getId() + "/");
   }
 
-  //SUCCESS:
   @Test
   public void givenValidImage_WhenImageRetrieved_then200andJpegImageTypeIsReturned() throws Exception{
     createDirectoryForTest(validDirectoryName);
@@ -85,8 +84,7 @@ public class MugshotControllerTest {
           get("/mugshot")
           .header("authenticated-user-name", username))
           .andExpect(status().isOk())
-          .andExpect(content().contentType(MediaType.IMAGE_JPEG))
-          .andDo(print());
+          .andExpect(content().contentType(MediaType.IMAGE_JPEG));
   }
 
   @Test
@@ -105,7 +103,6 @@ public class MugshotControllerTest {
     ).andExpect(status().isNoContent());
   }
 
-  //ERRORS:
   @Test
   public void givenFileNotFound_WhenImageRetrieved_then404isReturned() throws Exception{
     given(imageStorer.loadImage(userId.toString(),imageName)).willThrow(new ImageNotFound());
@@ -131,7 +128,7 @@ public class MugshotControllerTest {
   }
 
   @Test
-  public void givenWrongBodyRequestKey_WhenImageUploaded_then400isReturned() throws Exception{
+  public void givenWrongRequestBodyKey_WhenImageUploaded_then400isReturned() throws Exception{
       byte[] EmptyFile = new byte[0];
       multipartFile = new MockMultipartFile("wrongBodyKey", "ProfileImage.jpeg", MediaType.IMAGE_JPEG_VALUE, EmptyFile);
       mockMvc.perform(multipart("/mugshot")
