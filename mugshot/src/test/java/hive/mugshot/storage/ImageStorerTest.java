@@ -1,5 +1,4 @@
 package hive.mugshot.storage;
-
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,13 +33,16 @@ public class ImageStorerTest {
 
 
   @Before
-  public void setUp(){
+  public void setUp() throws IOException {
     userId= ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
+    var initialImage=new BufferedImage(512,512,BufferedImage.TYPE_INT_RGB);
+    var byteArrayOutputStream = new ByteArrayOutputStream();
+    ImageIO.write(initialImage,"jpg",byteArrayOutputStream);
     multipartFile=new MockMultipartFile(
         "image",
         "WhateverName.gif",
         MediaType.IMAGE_JPEG_VALUE,
-        "Spring Framework".getBytes()
+        byteArrayOutputStream.toByteArray()
     );
   }
 
