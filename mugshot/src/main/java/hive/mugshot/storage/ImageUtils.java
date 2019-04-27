@@ -7,8 +7,10 @@ import java.util.regex.Pattern;
 
 public final class ImageUtils {
   private static final String IMAGE_PATTERN = "(^.+\\.(gif|png|bmp|jpeg|jpg)$)";
+
   private ImageUtils(){
   }
+
   public static boolean validateIfHasAnImageAsExtension(final String image){
     var pattern = Pattern.compile(IMAGE_PATTERN);
     var matcher = pattern.matcher(image);
@@ -28,6 +30,7 @@ public final class ImageUtils {
     reSizer.dispose();
     return bufferedImageWithNewSize;
   }
+
   public static BufferedImage generateRandomImage(){
     var yellow=0xF6BD60;
     var orange=0xE9724C;
@@ -58,5 +61,5 @@ public final class ImageUtils {
     }
     return img;
   }
-}
 
+}
