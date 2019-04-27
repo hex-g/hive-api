@@ -51,7 +51,7 @@ public class StudentController {
 
     List<Student> foundStudents = studentRepository.findAll(Example.of(student));
 
-    if (foundStudents.size() == 0) {
+    if (foundStudents.isEmpty()) {
       throw new EntityNotFoundException();
     }
 
