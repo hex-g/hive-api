@@ -187,7 +187,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueDoesNotExists_whenDeletePedagogueByIdIsRetrieved_then404IsReceived() throws Exception {
+  public void givenPedagogueDoesNotExists_whenDeletePedagogueById_then404IsReceived() throws Exception {
 
     mockMvc.perform(
         delete("/admin/pedagogue")
@@ -198,7 +198,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenPedagogueExists_whenDeletePedagogueByIdIsRetrieved_then200IsReceived() throws Exception {
+  public void givenPedagogueExists_whenDeletePedagogueById_then200IsReceived() throws Exception {
     when(pedagogueRepository.existsById(1)).thenReturn(true);
 
     mockMvc.perform(
