@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.regex.Pattern;
 
 public final class ImageUtils {
-  private static final String IMAGE_PATTERN = "(.+\\.(gif|png|bmp|jpeg|jpg)$)";
+  private static final String IMAGE_PATTERN = "(^.+\\.(gif|png|bmp|jpeg|jpg)$)";
   private ImageUtils(){
   }
   public static boolean validateIfHasAnImageAsExtension(final String image){
