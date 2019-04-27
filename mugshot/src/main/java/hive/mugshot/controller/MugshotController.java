@@ -17,7 +17,7 @@ import org.springframework.core.io.Resource;
 import static hive.mugshot.storage.ImageUtils.validateIfHasAnImageAsExtension;
 
 @RestController
-@RequestMapping("/mugshot")
+@RequestMapping("/")
 public class MugshotController {
   @Value("${hive.mugshot.profile-image-name}")
   private String imageName;
