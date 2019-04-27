@@ -19,10 +19,12 @@ import static hive.mugshot.storage.ImageUtils.validateIfHasAnImageAsExtension;
 @RestController
 @RequestMapping("/")
 public class MugshotController {
+
   @Value("${hive.mugshot.profile-image-name}")
   private String imageName;
   private final ImageStorer imageStorer;
   private final UserRepository userRepository;
+
   @Autowired public MugshotController(ImageStorer imageStorer,UserRepository userRepository) {
     this.userRepository = userRepository;
     this.imageStorer = imageStorer;
@@ -32,7 +34,8 @@ public class MugshotController {
   @PostMapping
   public void sendImageProfile(
       @RequestParam("image") MultipartFile insertedImage,
-      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username
+  ){
     if(!validateIfHasAnImageAsExtension(insertedImage.getOriginalFilename())) {
       throw new NotAcceptedFileFormatException();
     }
@@ -42,7 +45,8 @@ public class MugshotController {
 
   @GetMapping(produces = MediaType.IMAGE_JPEG_VALUE)
   public ResponseEntity<Resource> searchProfileImage(
-      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username
+  ){
     var userID=userRepository.findByUsername(username).getId().toString();
     Resource file = imageStorer.loadImage(userID,imageName);
     return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
@@ -51,8 +55,10 @@ public class MugshotController {
   @ResponseStatus(code = HttpStatus.NO_CONTENT, reason = "Profile image successfully deleted")
   @DeleteMapping
   public void deleteProfileImage(
-      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username) {
+      @RequestHeader(name = HiveHeaders.AUTHENTICATED_USER_NAME_HEADER) final String username
+  ){
     var userID=userRepository.findByUsername(username).getId().toString();
     imageStorer.deleteImage(userID,imageName);
   }
+
 }
