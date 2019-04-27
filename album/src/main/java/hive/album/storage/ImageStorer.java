@@ -9,21 +9,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
 
 @Service
 public class ImageStorer {
-  @Value("${hive.mugshot.image-directory-path}")
+  @Value("${hive.album.image-directory-path}")
   private String rootDir;
-  @Value("${hive.mugshot.profile-image-dimension}")
+  @Value("${hive.album.profile-image-dimension}")
   private int imageSizeInPixels;
-  public void StoreImageProfile(String userDirectoryName,MultipartFile insertedImage,String imageStoredName){
+  public void storeImageProfile(String userDirectoryName, MultipartFile insertedImage, String imageStoredName){
     this.createDirectoryIfNotExist(userDirectoryName);
     try {
       var buff = ImageUtils.resizeImageToSquare(ImageIO.read(insertedImage.getInputStream()),imageSizeInPixels);
-      ImageIO.write(buff, "png", resolveRootPathFullUrlWith(userDirectoryName, imageStoredName).toFile());
+      ImageIO.write(buff, "jpg", resolveRootPathFullUrlWith(userDirectoryName, imageStoredName).toFile());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  public void storeImageProfile(String userDirectoryName, BufferedImage insertedImage, String imageStoredName){
+    this.createDirectoryIfNotExist(userDirectoryName);
+    try {
+      var buff = ImageUtils.resizeImageToSquare(insertedImage,imageSizeInPixels);
+      ImageIO.write(buff, "jpg", resolveRootPathFullUrlWith(userDirectoryName, imageStoredName).toFile());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -67,3 +77,5 @@ public class ImageStorer {
     return Paths.get(rootDir).resolve(userDirectoryName).resolve(filename);
   }
 }
+
+
