@@ -29,12 +29,7 @@ public class UtilsController {
   public UtilsController(ImageStorer imageStorer,UserRepository userRepository){
     this.userRepository=userRepository;
     this.imageStorer=imageStorer;
-    userRepository.save(new User("User","123",0,0));
-    userRepository.save(new User("Germano","123",0,0));
-    userRepository.save(new User("Java","123",0,0));
-    userRepository.save(new User("com espaco","123",0,0));
-    userRepository.save(new User("com/barra","123",0,0));
-    userRepository.save(new User("愛","123",0,0));
+    userRepository.save(new User("Test_User","123",0,0));
   }
 
   @GetMapping(value = "searchImage/{profileImageName:.+}", produces = MediaType.IMAGE_JPEG_VALUE)
