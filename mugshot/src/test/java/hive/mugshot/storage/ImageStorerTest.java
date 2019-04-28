@@ -26,6 +26,7 @@ public class ImageStorerTest {
   private Integer userId;
   private MockMultipartFile multipartFile;
   private BufferedImage initialImage;
+
   @Autowired
   private ImageStorer imageStorer;
   @Value("${hive.mugshot.image-directory-path}")
