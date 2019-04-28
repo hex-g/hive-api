@@ -118,7 +118,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenNoStudentInfoIsProvided_then406IsReceived() throws Exception {
+  public void givenNoStudentInfoIsProvided_whenStudentIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/student")
@@ -128,7 +128,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenEmptyStudentInfoIsProvided_then406IsReceived() throws Exception {
+  public void givenStudentInfoProvidedIsEmpty_whenStudentIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/student")
@@ -142,7 +142,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenStudentInfoOnlyWhiteSpacesIsProvided_then406IsReceived() throws Exception {
+  public void givenStudentInfoOnlyWhiteSpacesIsProvided_whenStudentIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/student")
@@ -156,7 +156,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenExistentStudentRaIsProvided_then409IsReceived() throws Exception {
+  public void givenRaAlreadyExists_whenStudentIsSaved_then409IsReceived() throws Exception {
     when(studentRepository.existsByRa("ra-test")).thenReturn(true);
 
     mockMvc.perform(
@@ -171,7 +171,7 @@ public class StudentControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveStudent_whenExistentStudentUsernameIsProvided_then409IsReceived() throws Exception {
+  public void givenUsernameAlreadyExists_whenStudentIsSaved_then409IsReceived() throws Exception {
     when(userRepository.existsByUsername("test")).thenReturn(true);
 
     mockMvc.perform(
