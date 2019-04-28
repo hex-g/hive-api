@@ -27,11 +27,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class UtilsControllerTest {
 
-  private MockMvc mockMvc;
   private String username = RandomStringUtils.randomAlphabetic(8);
   private Integer userId = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
+
+  private MockMvc mockMvc;
+
   @Value("${hive.mugshot.profile-image-name}")
   private String imageName;
+
   @Mock
   private UserRepository userRepository;
   @Mock
