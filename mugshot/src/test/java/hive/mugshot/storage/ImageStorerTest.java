@@ -22,8 +22,10 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ImageStorerTest {
+
   private Integer userId;
   private MockMultipartFile multipartFile;
+  private BufferedImage initialImage;
   @Autowired
   private ImageStorer imageStorer;
   @Value("${hive.mugshot.image-directory-path}")
@@ -37,7 +39,7 @@ public class ImageStorerTest {
   @Before
   public void setUp() throws IOException {
     userId= ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
-    var initialImage=new BufferedImage(512,512,BufferedImage.TYPE_INT_RGB);
+    initialImage=new BufferedImage(512,512,BufferedImage.TYPE_INT_RGB);
     var byteArrayOutputStream = new ByteArrayOutputStream();
     ImageIO.write(initialImage,"jpg",byteArrayOutputStream);
     multipartFile=new MockMultipartFile(
@@ -49,8 +51,15 @@ public class ImageStorerTest {
   }
 
   @Test
-  public void uploadImage_WhenImageNameAndUserDirectoryIsNotNull_expectFileExists(){
+  public void uploadImage_WhenMultipartFileIsProvided_expectFileExists(){
     imageStorer.storeImageProfile(userId.toString(),multipartFile,imageName);
+    Path path=Paths.get(rootDir,userId.toString(),imageName);
+    assertTrue(Files.exists(path));
+  }
+
+  @Test
+  public void uploadImage_WhenBufferedImageIsProvided_expectFileExists(){
+    imageStorer.storeImageProfile(userId.toString(),initialImage,imageName);
     Path path=Paths.get(rootDir,userId.toString(),imageName);
     assertTrue(Files.exists(path));
   }
