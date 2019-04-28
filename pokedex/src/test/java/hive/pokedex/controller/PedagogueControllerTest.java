@@ -119,7 +119,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenTriedToSavePedagogue_whenNoPedagogueInfoProvided_then406IsReceived() throws Exception {
+  public void givenNoPedagogueInfoProvided_whenPedagogueIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/pedagogue")
@@ -129,7 +129,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenTriedToSavePedagogue_whenEmptyPedagogueInfoIsProvided_then406IsReceived() throws Exception {
+  public void givenPedagogueInfoProvidedIsEmpty_whenPedagogueIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/pedagogue")
@@ -143,7 +143,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenTriedToSavePedagogue_whenPedagogueInfoOnlyWhiteSpacesIsProvided_then406IsReceived() throws Exception {
+  public void givenPedagogueInfoOnlyWhiteSpacesIsProvided_whenPedagogueIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/pedagogue")
@@ -157,7 +157,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenTriedToSavePedagogue_whenExistentPedagogueRmIsProvided_then409IsReceived() throws Exception {
+  public void givenRmAlreadyExists_whenPedagogueIsSaved_then409IsReceived() throws Exception {
     when(pedagogueRepository.existsByRm("rm-test")).thenReturn(true);
 
     mockMvc.perform(
@@ -172,7 +172,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenTriedToSavePedagogue_whenExistentPedagogueUsernameIsProvided_then409IsReceived() throws Exception {
+  public void givenUsernameAlreadyExists_whenPedagogueIsSaved_then409IsReceived() throws Exception {
     when(userRepository.existsByUsername("test")).thenReturn(true);
 
     mockMvc.perform(
