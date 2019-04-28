@@ -38,14 +38,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class MugshotControllerTest {
 
   private MockMvc mockMvc;
+  private MockMultipartFile multipartFile;
   private String validDirectoryName;
   private String username = RandomStringUtils.randomAlphabetic(8);
   private Integer userId = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
-  private MockMultipartFile multipartFile;
+
   @Value("${hive.mugshot.image-directory-path}")
   private String rootDir;
   @Value("${hive.mugshot.profile-image-name}")
   private String imageName;
+
   @Mock
   private UserRepository userRepository;
   @Mock
