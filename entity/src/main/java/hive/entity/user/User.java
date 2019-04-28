@@ -1,12 +1,14 @@
 package hive.entity.user;
 
 import org.hibernate.annotations.Check;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
+@DynamicUpdate
 @Entity
 @Table(name = "tb_user")
-@Check(constraints = "role in (0, 1, 2) and status in (0, 1, 2, 3)")
+@Check(constraints = "role in ('STUDENT', 'PEDAGOGUE', 'ADMIN')")
 public class User {
 
   @Id
@@ -20,19 +22,19 @@ public class User {
   private String password;
 
   @Column(name = "role")
-  private int role;
-
-  @Column(name = "status")
-  private int status;
+  private String role;
 
   public User() {
   }
 
-  public User(String username, String password, int role, int status) {
+  public User(String username, String password, String role) {
     this.username = username;
     this.password = password;
     this.role = role;
-    this.status = status;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public Integer getId() {
@@ -55,20 +57,12 @@ public class User {
     this.password = password;
   }
 
-  public int getRole() {
+  public String getRole() {
     return role;
   }
 
-  public void setRole(int role) {
+  public void setRole(String role) {
     this.role = role;
-  }
-
-  public int getStatus() {
-    return status;
-  }
-
-  public void setStatus(int status) {
-    this.status = status;
   }
 
 }
