@@ -107,7 +107,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveUser_whenNoUserInfoProvided_then406IsReceived() throws Exception {
+  public void givenNoUserInfoIsProvided_whenUserIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/user")
@@ -117,7 +117,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveUser_whenEmptyUserInfoIsProvided_then406IsReceived() throws Exception {
+  public void givenUserInfoProvidedIsEmpty_whenUserIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/user")
@@ -129,7 +129,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveUser_whenUserInfoOnlyWhiteSpacesIsProvided_then406IsReceived() throws Exception {
+  public void givenUserInfoOnlyWhiteSpacesIsProvided_whenUserIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/user")
@@ -141,7 +141,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void givenTriedToSaveUser_whenExistentUsernameIsProvided_then409IsReceived() throws Exception {
+  public void givenUsernameAlreadyExists_whenUserIsSaved_then409IsReceived() throws Exception {
     when(userRepository.existsByUsername("test")).thenReturn(true);
 
     mockMvc.perform(
