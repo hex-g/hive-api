@@ -119,7 +119,7 @@ public class PedagogueControllerTest {
   }
 
   @Test
-  public void givenNoPedagogueInfoProvided_whenPedagogueIsSaved_then406IsReceived() throws Exception {
+  public void givenNoPedagogueInfoIsProvided_whenPedagogueIsSaved_then406IsReceived() throws Exception {
 
     mockMvc.perform(
         post("/admin/pedagogue")
