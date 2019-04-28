@@ -25,7 +25,8 @@ public class MugshotController {
   private final ImageStorer imageStorer;
   private final UserRepository userRepository;
 
-  @Autowired public MugshotController(ImageStorer imageStorer,UserRepository userRepository) {
+  @Autowired
+  public MugshotController(ImageStorer imageStorer,UserRepository userRepository) {
     this.userRepository = userRepository;
     this.imageStorer = imageStorer;
   }
