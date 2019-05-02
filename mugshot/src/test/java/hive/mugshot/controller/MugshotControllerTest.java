@@ -1,7 +1,6 @@
 package hive.mugshot.controller;
 
 import hive.mugshot.exception.ImageNotFound;
-import hive.mugshot.repository.UserRepository;
 import hive.mugshot.storage.ImageStorer;
 import hive.entity.user.User;
 
@@ -25,12 +24,11 @@ import java.io.*;
 import java.nio.file.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.ThreadLocalRandom;
 
+import static hive.common.security.HiveHeaders.AUTHENTICATED_USER_ID;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @RunWith(SpringRunner.class)
@@ -38,8 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class MugshotControllerTest {
 
   private String validDirectoryName;
-  private String username = RandomStringUtils.randomAlphabetic(8);
-  private Integer userId = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
+  private String userId = RandomStringUtils.randomAlphabetic(8);
 
   private MockMvc mockMvc;
   private MockMultipartFile multipartFile;
@@ -49,8 +46,6 @@ public class MugshotControllerTest {
   @Value("${hive.mugshot.profile-image-name}")
   private String imageName;
 
-  @Mock
-  private UserRepository userRepository;
   @Mock
   private ImageStorer imageStorer;
   @Mock
@@ -69,9 +64,7 @@ public class MugshotControllerTest {
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
-    when(user.getId()).thenReturn(userId);
-    when(userRepository.findByUsername(username)).thenReturn(user);
-    var mugshotController = new MugshotController(imageStorer,userRepository);
+    var mugshotController = new MugshotController(imageStorer);
     ReflectionTestUtils.setField(mugshotController, "imageName", imageName);
     mockMvc = MockMvcBuilders.standaloneSetup(mugshotController).build();
     validDirectoryName = (rootDir + "/" + user.getId() + "/");
@@ -81,11 +74,11 @@ public class MugshotControllerTest {
   public void givenValidImage_WhenImageRetrieved_then200andJpegImageTypeIsReturned() throws Exception{
     createDirectoryForTest(validDirectoryName);
     var resourceImage=createImageForTest(validDirectoryName);
-    given(imageStorer.loadImage(userId.toString(),imageName))
+    given(imageStorer.loadImage(userId,imageName))
         .willReturn(resourceImage);
       mockMvc.perform(
           get("/")
-          .header("authenticated-user-name", username))
+          .header(AUTHENTICATED_USER_ID, userId))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.IMAGE_JPEG))
           .andDo(print());
@@ -95,7 +88,7 @@ public class MugshotControllerTest {
   public void givenValidImage_WhenImageUploaded_then200isReturned() throws Exception{
     multipartFile = new MockMultipartFile("image", "Profile Image.jpg", MediaType.IMAGE_JPEG_VALUE, "Spring Framework".getBytes());
     mockMvc.perform(
-        multipart("/").file(multipartFile).header("authenticated-user-name",username))
+        multipart("/").file(multipartFile).header(AUTHENTICATED_USER_ID, userId))
         .andExpect(status().isOk())
         .andDo(print());
   }
@@ -103,17 +96,17 @@ public class MugshotControllerTest {
   @Test
   public void givenValidImage_WhenImageDeleted_then204isReturned() throws Exception{
     mockMvc.perform(
-        delete("/").header("authenticated-user-name",username)
+        delete("/").header(AUTHENTICATED_USER_ID, userId)
     ).andExpect(status().isNoContent());
   }
 
   @Test
   public void givenFileNotFound_WhenImageRetrieved_then404isReturned() throws Exception{
-    given(imageStorer.loadImage(userId.toString(),imageName)).willThrow(new ImageNotFound());
+    given(imageStorer.loadImage(userId,imageName)).willThrow(new ImageNotFound());
     createDirectoryForTest(validDirectoryName);
     mockMvc.perform(
         get("/")
-        .header("authenticated-user-name", username))
+        .header(AUTHENTICATED_USER_ID, userId))
         .andExpect(status().isNotFound())
         .andDo(print());
   }
@@ -126,7 +119,7 @@ public class MugshotControllerTest {
       multipartFile = new MockMultipartFile("image", "Unsupported.Extension.wmv", MediaType.APPLICATION_PDF_VALUE, byteArrayOutputStream.toByteArray());
       mockMvc.perform(multipart("/")
           .file(multipartFile)
-          .header("authenticated-user-name", username))
+          .header(AUTHENTICATED_USER_ID, userId))
           .andExpect(status().isUnsupportedMediaType())
           .andDo(print());
   }
@@ -136,14 +129,14 @@ public class MugshotControllerTest {
       byte[] EmptyFile = new byte[0];
       multipartFile = new MockMultipartFile("wrongBodyKey", "ProfileImage.jpeg", MediaType.IMAGE_JPEG_VALUE, EmptyFile);
       mockMvc.perform(multipart("/")
-          .file(multipartFile).header("authenticated-user-name", username))
+          .file(multipartFile).header(AUTHENTICATED_USER_ID, userId))
           .andExpect(status().isBadRequest())
           .andDo(print());
   }
 
   @After
   public void deleteCreatedDirectory() throws IOException {
-    Path createdDirectoryPath=Paths.get(rootDir,userId.toString());
+    Path createdDirectoryPath=Paths.get(rootDir,userId);
     Path createdImagePath=createdDirectoryPath.resolve(imageName);
     Files.deleteIfExists(createdImagePath);
     Files.deleteIfExists(createdDirectoryPath);

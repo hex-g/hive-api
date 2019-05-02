@@ -36,8 +36,6 @@ public class UtilsControllerTest {
   private String imageName;
 
   @Mock
-  private UserRepository userRepository;
-  @Mock
   private ImageStorer imageStorer;
   @Mock
   private User user;
@@ -46,8 +44,7 @@ public class UtilsControllerTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
     when(user.getId()).thenReturn(userId);
-    when(userRepository.findByUsername(username)).thenReturn(user);
-    var utilsController = new UtilsController(imageStorer,userRepository);
+    var utilsController = new UtilsController(imageStorer);
     ReflectionTestUtils.setField(utilsController, "imageName", imageName);
     mockMvc = MockMvcBuilders.standaloneSetup(utilsController).build();
   }
@@ -57,7 +54,7 @@ public class UtilsControllerTest {
     mockMvc
         .perform(
             post("/utils/generateRandomImage")
-                .header(HiveHeaders.AUTHENTICATED_USER_NAME_HEADER, username)
+                .header(HiveHeaders.AUTHENTICATED_USER_ID, username)
         )
         .andExpect(status().isOk())
         .andDo(print());
